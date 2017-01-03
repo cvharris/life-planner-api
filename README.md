@@ -1,6 +1,6 @@
-# Vatterott Foundation API
-An API for uploading and managing grant applications
+# Life Planner API
+An API for managing Life!
 ==========================
 
 # What This Runs On
-Hapi, Mongoose, PlutoPath (thanks ecowden!), and magic!
+Hapi, Mongoose, PlutoPath (thanks @ecowden!), and magic!
