@@ -8,15 +8,6 @@ const monitoringInterval = process.env['ENV'] === 'prod' ? 60 * 1000 : 60 * 60 *
 
 module.exports = function (log) {
 
-  const users = {
-    bill: {
-      username: 'bill',
-      password: 'CFVatterott1014',   // 'secret'
-      name: 'Administrator',
-      id: '1'
-    }
-  };
-
   const validate = function (request, username, password, callback) {
     const user = users[username];
     if (!user) {
@@ -43,15 +34,22 @@ module.exports = function (log) {
       }
     }
   })
-
-  server.register(require('hapi-auth-basic'), (err) => {
-    server.auth.strategy('simple', 'basic', { validateFunc: validate })
-    server.auth.default('simple')
+  /*
+  // Tried this first and of course this wasn't working either
+  server.register([require('hapi-auth-cookie')], (err) => {
+    server.auth.strategy('session', 'cookie', true, {
+      password: 'password-that-is-32-characters-long', // cookie secret
+      cookie: 'session', // Cookie name
+      isSecure: false, // required for non-https applications
+      ttl: 24* 60 * 60 * 1000 // Set session to 1 day
+    });
   })
+  */
 
   co.wrap(function* () {
     yield server.register([
       require('inert'),
+      require('hapi-auth-cookie'),
       require('vision'), {
         register: good,
         options: {
@@ -72,6 +70,14 @@ module.exports = function (log) {
         }
       }
     ])
+
+    console.log('do stuff with the plugins!')
+    server.auth.strategy('session', 'cookie', true, {
+      password: 'password-that-is-32-characters-long', // cookie secret
+      cookie: 'session', // Cookie name
+      isSecure: false, // required for non-https applications
+      ttl: 24* 60 * 60 * 1000 // Set session to 1 day
+    });
 
     yield server.start()
     log.info('Server started:', {

@@ -6,12 +6,15 @@ const Schema = mongoose.Schema
 module.exports = function () {
 
   const schema = new Schema({
-    fileName: String,
-    path: String,
-    uploaded: {
-      type: Date
-    }
-  }, { collection: 'Applications' })
+    shortDescription: String,
+    _user: Schema.Types.ObjectId,
+    startDate: { type: Date },
+    endDate: { type: Date },
+    category: String
+  }, {
+    collection: 'Levents',
+    timestamps: true
+  })
 
   function transform(doc, ret) {
     delete ret._id
@@ -22,7 +25,7 @@ module.exports = function () {
   schema.set('toJSON', { virtuals: true, transform: transform })
   schema.set('toObject', { virtuals: true, transform: transform })
 
-  mongoose.model('Application', schema)
+  mongoose.model('Levent', schema)
 
-  return mongoose.model('Application')
+  return mongoose.model('Levent')
 }

@@ -1,27 +1,30 @@
 "use strict"
 
-module.exports = function (server, applicationController) {
-  const ctrl = applicationController
-  const root = 'application'
+module.exports = function (server, leventController) {
+  const ctrl = leventController
+  const root = 'levent'
 
   server.route({
     method: 'GET',
     path: `/${root}`,
     config: {
+      auth: { mode: 'try', strategy: 'session' }, // or simply 'session'
       handler: ctrl.list
     }
   })
   server.route({
     method: 'GET',
-    path: `/${root}/{application_name}`,
+    path: `/${root}/{name}`,
     config: {
+      auth: { mode: 'try', strategy: 'session' }, // or simply 'session'
       handler: ctrl.download
     }
   })
   server.route({
     method: 'DELETE',
-    path: `/${root}/{application_name}`,
+    path: `/${root}/{name}`,
     config: {
+      auth: { mode: 'try', strategy: 'session' }, // or simply 'session'
       handler: ctrl.deleteApplication
     }
   })
@@ -29,6 +32,7 @@ module.exports = function (server, applicationController) {
     method: 'POST',
     path: `/${root}`,
     config: {
+      auth: { mode: 'try', strategy: 'session' }, // or simply 'session'
       handler: ctrl.upload,
       payload: {
         output: 'stream',

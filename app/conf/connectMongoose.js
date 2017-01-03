@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose')
 
-const databaseName = 'vatterottFoundation'
+const databaseName = 'lifePlanner'
 mongoose.Promise = global.Promise
 
 module.exports = function (log) {
