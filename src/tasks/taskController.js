@@ -3,7 +3,7 @@
 const co = require('co')
 const _ = require('lodash')
 
-module.exports = function grantControllerFactory(Levent, log) {
+module.exports = function grantControllerFactory(Task, log) {
 
   return {
 		list: co.wrap(list),

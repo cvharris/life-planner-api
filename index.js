@@ -3,7 +3,7 @@
 const co = require('co')
 const path = require('path')
 const plutoPath = require('pluto-path')
-const appPath = path.join(__dirname, 'app')
+const appPath = path.join(__dirname, 'src')
 const app = require('./package.json')
 
 co(function* () {

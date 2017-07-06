@@ -12,7 +12,7 @@ module.exports = function () {
     endDate: { type: Date },
     category: String
   }, {
-    collection: 'Levents',
+    collection: 'Tasks',
     timestamps: true
   })
 
@@ -25,7 +25,7 @@ module.exports = function () {
   schema.set('toJSON', { virtuals: true, transform: transform })
   schema.set('toObject', { virtuals: true, transform: transform })
 
-  mongoose.model('Levent', schema)
+  mongoose.model('Task', schema)
 
-  return mongoose.model('Levent')
+  return mongoose.model('Task')
 }
