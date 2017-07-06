@@ -3,28 +3,35 @@
 const co = require('co')
 const _ = require('lodash')
 
-module.exports = function grantControllerFactory(Task, log) {
+module.exports = function (Task, log) {
 
   return {
 		list: co.wrap(list),
     update: co.wrap(update),
-    deleteEvent: co.wrap(deleteEvent),
+    deleteTask: co.wrap(deleteTask),
     create: co.wrap(create)
   }
 
   function* list(request, reply) {
-    reply('listing all events')
+    reply('listing all Tasks')
 	}
 
 	function* create(request, reply) {
-    reply('creating event')
+    const task = new Task({
+      description: request.payload.description,
+      owner: request.payload.owner,
+    })
+
+    const result = yield task.save()
+
+    reply(result)
 	}
 
   function* update(request, reply) {
-    reply('updating event')
+    reply('updating Task')
   }
 
-  function* deleteEvent(request, reply) {
+  function* deleteTask(request, reply) {
     reply(`application "${request.params.name}" deleted!`)
   }
 }

@@ -1,8 +1,8 @@
 "use strict"
 
-module.exports = function (server, taskController) {
-  const ctrl = taskController
-  const root = 'task'
+module.exports = function (server, userController) {
+  const ctrl = userController
+  const root = 'user'
 
   server.route({
     method: 'GET',
@@ -13,16 +13,16 @@ module.exports = function (server, taskController) {
   })
   server.route({
     method: 'PUT',
-    path: `/${root}/{name}`,
+    path: `/${root}/{userId}`,
     config: {
       handler: ctrl.update
     }
   })
   server.route({
     method: 'DELETE',
-    path: `/${root}/{name}`,
+    path: `/${root}/{userId}`,
     config: {
-      handler: ctrl.deleteTask
+      handler: ctrl.deleteUser
     }
   })
   server.route({

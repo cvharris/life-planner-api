@@ -6,11 +6,24 @@ const Schema = mongoose.Schema
 module.exports = function () {
 
   const schema = new Schema({
-    shortDescription: String,
-    _user: Schema.Types.ObjectId,
+    description: {
+      type: String,
+      required: true,
+    },
+    _owner: {
+      type: Schema.Types.ObjectId,
+      required: true
+    },
+    _assignedTo: [ Schema.Types.ObjectId ],
+    state: { type: Schema.Types.ObjectId },
+    dueDate: { type: Date },
     startDate: { type: Date },
     endDate: { type: Date },
-    category: String
+    isRepeating: Boolean,
+    isBusy: Boolean,
+    isCompleted: Boolean,
+    tags: [ Schema.Types.ObjectId ],
+    children: [ Schema.Types.ObjectId ],
   }, {
     collection: 'Tasks',
     timestamps: true

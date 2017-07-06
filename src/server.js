@@ -13,15 +13,10 @@ module.exports = function (log) {
 
   server.connection({
     port: 4202,
+    host: 'localhost',
     router: {
       isCaseSensitive: false,
       stripTrailingSlash: true
-    },
-    routes: {
-      cors: {
-        headers: ['Accept', 'Authorization', 'Content-Type', 'If-None-Match'],
-        credentials: true
-      }
     }
   })
 
@@ -53,6 +48,12 @@ module.exports = function (log) {
     log.info('Server started:', {
       uri: server.info.uri
     })
+
+    // Log table of routes
+    // const table = server.table()
+    // table[0].table.forEach(route => {
+    //   console.log(route.method, route.path);
+    // })
   })()
 
   return server

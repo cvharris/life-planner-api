@@ -7,18 +7,27 @@ const passportLocalMongoose = require('passport-local-mongoose')
 module.exports = function () {
 
   const schema = new Schema({
+    firstName: String,
+    lastName: String,
     email: { type: String, required: true },
-    password: { type: String, required: true }
   }, {
     collection: 'Users',
     timestamps: true
   })
 
-  schema.plugin(passportLocalMongoose, {
-    usernameField: 'email',
-    hashField: 'password',
-    usernameLowerCase: true
-  })
+  // schema.plugin(passportLocalMongoose, {
+  //   usernameField: 'email',
+  //   hashField: 'password',
+  //   usernameLowerCase: true
+  // })
+
+  function transform(doc, ret) {
+    delete ret.__v
+    return ret
+  }
+
+  schema.set('toJSON', { virtuals: true, transform: transform })
+  schema.set('toObject', { virtuals: true, transform: transform })
 
   mongoose.model('User', schema)
 
