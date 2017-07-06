@@ -8,16 +8,6 @@ const monitoringInterval = process.env['ENV'] === 'prod' ? 60 * 1000 : 60 * 60 *
 
 module.exports = function (log) {
 
-  const validate = function (request, username, password, callback) {
-    const user = users[username];
-    if (!user) {
-      return callback(null, false);
-    }
-
-    const isValid = password === user.password
-    callback(null, isValid, { id: user.id, name: user.name });
-  };
-
   const Hapi = require('hapi');
   const server = new Hapi.Server();
 
@@ -38,7 +28,6 @@ module.exports = function (log) {
   co.wrap(function* () {
     yield server.register([
       require('inert'),
-      require('hapi-auth-cookie'),
       require('vision'), {
         register: good,
         options: {
@@ -59,13 +48,6 @@ module.exports = function (log) {
         }
       }
     ])
-
-    server.auth.strategy('session', 'cookie', true, {
-      password: 'password-that-is-32-characters-long', // cookie secret
-      cookie: 'session', // Cookie name
-      isSecure: false, // required for non-https applications
-      ttl: 24* 60 * 60 * 1000 // Set session to 1 day
-    });
 
     yield server.start()
     log.info('Server started:', {
