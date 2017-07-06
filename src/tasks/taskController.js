@@ -1,7 +1,7 @@
 "use strict";
 
 const co = require('co')
-const _ = require('lodash')
+const mongoose = require('mongoose')
 
 module.exports = function (Task, log) {
 
@@ -19,7 +19,7 @@ module.exports = function (Task, log) {
 	function* create(request, reply) {
     const task = new Task({
       description: request.payload.description,
-      owner: request.payload.owner,
+      _owner: mongoose.Types.ObjectId(request.payload.owner),
     })
 
     const result = yield task.save()
