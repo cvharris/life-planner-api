@@ -13,7 +13,9 @@ module.exports = function (Task, log) {
   }
 
   function* list(request, reply) {
-    reply('listing all Tasks')
+    const result = Task.find().exec()
+
+    reply(result)
 	}
 
 	function* create(request, reply) {
