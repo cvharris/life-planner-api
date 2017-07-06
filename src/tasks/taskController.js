@@ -2,23 +2,24 @@
 
 const co = require('co')
 const mongoose = require('mongoose')
+const _ = require('lodash')
 
 module.exports = function (Task, log) {
 
   return {
-		list: co.wrap(list),
-    update: co.wrap(update),
+		list: co.wrap(listTasks),
+    patch: co.wrap(patchTask),
     deleteTask: co.wrap(deleteTask),
-    create: co.wrap(create)
+    create: co.wrap(createTask)
   }
 
-  function* list(request, reply) {
+  function* listTasks(request, reply) {
     const result = Task.find().exec()
 
     reply(result)
 	}
 
-	function* create(request, reply) {
+	function* createTask(request, reply) {
     const task = new Task({
       description: request.payload.description,
       _owner: mongoose.Types.ObjectId(request.payload.owner),
@@ -29,11 +30,16 @@ module.exports = function (Task, log) {
     reply(result)
 	}
 
-  function* update(request, reply) {
-    reply('updating Task')
+  function* patchTask(request, reply) {
+    const task = yield Task.findById(request.params.taskId)
+    _.extend(task, request.payload)    
+
+    const result = yield task.save()
+
+    reply(result)
   }
 
   function* deleteTask(request, reply) {
-    reply(`application "${request.params.name}" deleted!`)
+    reply(`application "${request.params.taskId}" deleted!`)
   }
 }

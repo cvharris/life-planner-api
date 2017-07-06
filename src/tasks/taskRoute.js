@@ -12,15 +12,15 @@ module.exports = function (server, taskController) {
     }
   })
   server.route({
-    method: 'PUT',
-    path: `/${root}/{name}`,
+    method: 'PATCH',
+    path: `/${root}/{taskId}`,
     config: {
-      handler: ctrl.update
+      handler: ctrl.patch
     }
   })
   server.route({
     method: 'DELETE',
-    path: `/${root}/{name}`,
+    path: `/${root}/{taskId}`,
     config: {
       handler: ctrl.deleteTask
     }
