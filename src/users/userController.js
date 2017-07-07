@@ -13,7 +13,7 @@ module.exports = function (User, log) {
   }
 
   function* list(request, reply) {
-    const result = yield User.find().exec()
+    const result = yield User.find()
 
     reply(result)
 	}

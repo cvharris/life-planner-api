@@ -19,9 +19,10 @@ module.exports = function () {
     dueDate: { type: Date },
     startDate: { type: Date },
     endDate: { type: Date },
-    isRepeating: Boolean,
-    isBusy: Boolean,
-    isCompleted: Boolean,
+    isActive: { type: Boolean, default: true },
+    isRepeating: { type: Boolean, default: false },
+    isBusy: { type: Boolean, default: true },
+    isCompleted: { type: Boolean, default: false },
     tags: [ Schema.Types.ObjectId ],
     children: [ Schema.Types.ObjectId ],
   }, {

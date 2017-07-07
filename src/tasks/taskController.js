@@ -3,6 +3,7 @@
 const co = require('co')
 const mongoose = require('mongoose')
 const _ = require('lodash')
+const Boom = require('boom')
 
 module.exports = function (Task, log) {
 
@@ -14,18 +15,24 @@ module.exports = function (Task, log) {
   }
 
   function* listTasks(request, reply) {
-    const result = Task.find().exec()
+    const result = yield Task.find()
 
     reply(result)
 	}
 
 	function* createTask(request, reply) {
-    const task = new Task({
-      description: request.payload.description,
-      _owner: mongoose.Types.ObjectId(request.payload.owner),
-    })
+    const treatedTask = request.payload
+    treatedTask._owner = mongoose.Types.ObjectId(treatedTask.owner)
+    delete treatedTask.owner
 
-    const result = yield task.save()
+    const task = new Task(treatedTask)
+
+    let result 
+    try {
+      result = yield task.save()
+    } catch (e) {
+      return reply(Boom.badRequest(e))
+    }
 
     reply(result)
 	}
@@ -40,6 +47,8 @@ module.exports = function (Task, log) {
   }
 
   function* deleteTask(request, reply) {
-    reply(`application "${request.params.taskId}" deleted!`)
+    yield Task.findByIdAndRemove(request.params.taskId)
+
+    reply(`Task ${request.params.taskId} deleted!`).code(204)
   }
 }
