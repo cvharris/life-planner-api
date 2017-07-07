@@ -17,6 +17,12 @@ module.exports = function (log) {
     router: {
       isCaseSensitive: false,
       stripTrailingSlash: true
+    },
+    routes: {
+      cors: {
+        headers: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type', 'If-None-Match', 'enctype'],
+        credentials: true
+      }
     }
   })
 
