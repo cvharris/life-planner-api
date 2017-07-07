@@ -21,11 +21,7 @@ module.exports = function (Task, log) {
 	}
 
 	function* createTask(request, reply) {
-    const treatedTask = request.payload
-    treatedTask._owner = mongoose.Types.ObjectId(treatedTask.owner)
-    delete treatedTask.owner
-
-    const task = new Task(treatedTask)
+    const task = new Task(request.payload)
 
     let result 
     try {

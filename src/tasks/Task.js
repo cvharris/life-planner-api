@@ -10,11 +10,11 @@ module.exports = function () {
       type: String,
       required: true,
     },
-    _owner: {
+    owner: {
       type: Schema.Types.ObjectId,
       required: true
     },
-    _assignedTo: [ Schema.Types.ObjectId ],
+    assignedTo: [ Schema.Types.ObjectId ],
     state: { type: Schema.Types.ObjectId },
     dueDate: { type: Date },
     startDate: { type: Date },
