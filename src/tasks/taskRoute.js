@@ -19,6 +19,13 @@ module.exports = function (server, taskController) {
     }
   })
   server.route({
+    method: 'PUT',
+    path: `/${root}/{taskId}/deactivate`,
+    config: {
+      handler: ctrl.deactivateTask
+    }
+  })
+  server.route({
     method: 'DELETE',
     path: `/${root}/{taskId}`,
     config: {

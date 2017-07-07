@@ -10,12 +10,13 @@ module.exports = function (Task, log) {
   return {
 		list: co.wrap(listTasks),
     patch: co.wrap(patchTask),
+    deactivateTask: co.wrap(deactivateTask),
     deleteTask: co.wrap(deleteTask),
     create: co.wrap(createTask)
   }
 
   function* listTasks(request, reply) {
-    const result = yield Task.find()
+    const result = yield Task.find({ isActive: true })
 
     reply(result)
 	}
@@ -42,7 +43,14 @@ module.exports = function (Task, log) {
     reply(result)
   }
 
+  function* deactivateTask(request, reply) {
+    const task = yield Task.findByIdAndUpdate(request.params.taskId, { isActive: false }, { new: true })
+
+    reply(task)
+  }
+
   function* deleteTask(request, reply) {
+    // TODO: deprecated. Make Service method only
     yield Task.findByIdAndRemove(request.params.taskId)
 
     reply(`Task ${request.params.taskId} deleted!`).code(204)
