@@ -7,29 +7,21 @@ module.exports = function (server, taskController) {
   server.route({
     method: 'GET',
     path: `/${root}`,
-    config: {
-      handler: ctrl.list
-    }
+    handler: ctrl.list
   })
   server.route({
     method: 'PATCH',
     path: `/${root}/{taskId}`,
-    config: {
-      handler: ctrl.patch
-    }
+    handler: ctrl.patch
   })
   server.route({
     method: 'DELETE',
     path: `/${root}/{taskId}`,
-    config: {
-      handler: ctrl.deactivateTask
-    }
+    handler: ctrl.deactivateTask
   })
   server.route({
     method: 'POST',
     path: `/${root}`,
-    config: {
-      handler: ctrl.create
-    }
+    handler: ctrl.create
   })
 }

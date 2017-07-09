@@ -1,6 +1,6 @@
 'use strict'
 
-module.exports = function() {
+module.exports = function(redisClient) {
   return function (request, reply, tokens, profile) {
     if(profile) {
       // extract the relevant data from Profile to store in JWT object

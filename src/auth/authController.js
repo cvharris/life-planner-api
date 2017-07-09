@@ -7,7 +7,7 @@ module.exports = function(User, redisClient) {
   return {
     login: co.wrap(login),
     logout: co.wrap(logout),
-    register: co.wrap(register)
+    register: co.wrap(register),
   }
 
   function* login(request, reply) {

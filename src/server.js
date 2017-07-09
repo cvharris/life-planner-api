@@ -54,8 +54,6 @@ module.exports = function (log, googleAuthHandler, redisClient) {
     }
   })
 
-
-
   co.wrap(function* () {
     yield server.register([
       require('inert'),
