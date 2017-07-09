@@ -2,7 +2,6 @@
 
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
-const passportLocalMongoose = require('passport-local-mongoose')
 
 module.exports = function () {
 
@@ -14,12 +13,6 @@ module.exports = function () {
     collection: 'Users',
     timestamps: true
   })
-
-  // schema.plugin(passportLocalMongoose, {
-  //   usernameField: 'email',
-  //   hashField: 'password',
-  //   usernameLowerCase: true
-  // })
 
   function transform(doc, ret) {
     delete ret.__v

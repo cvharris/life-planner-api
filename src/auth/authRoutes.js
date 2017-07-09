@@ -7,7 +7,14 @@ module.exports = function(server, authController) {
     method: 'POST',
     path: '/login',
     config: {
-      handler: ctrl.login
-    }
+      auth: false,
+    },
+    handler: ctrl.login
+  })
+
+  server.route({
+    method: 'POST',
+    path: '/logout',
+    handler: ctrl.logout
   })
 }
