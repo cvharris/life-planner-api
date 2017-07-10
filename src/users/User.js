@@ -9,6 +9,9 @@ module.exports = function () {
     firstName: String,
     lastName: String,
     email: { type: String, required: true },
+    imageUrl: String,
+    locale: String,
+    googleId: String
   }, {
     collection: 'Users',
     timestamps: true

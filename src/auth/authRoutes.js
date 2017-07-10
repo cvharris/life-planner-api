@@ -17,4 +17,13 @@ module.exports = function(server, authController) {
     path: '/logout',
     handler: ctrl.logout
   })
+
+  server.route({
+    method: 'POST',
+    path: '/auth/google',
+    config: {
+      auth: false,
+    },
+    handler: ctrl.authGoogle,
+  })
 }

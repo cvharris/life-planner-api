@@ -11,7 +11,7 @@ const redis = require('redis')
 // Log ops info very rarely when running locally. Time is in milliseconds.
 const monitoringInterval = process.env.ENV === 'prod' ? 60 * 1000 : 60 * 60 * 1000
 
-module.exports = function (log, googleAuthHandler, redisClient) {
+module.exports = function (log, redisClient) {
 
   const Hapi = require('hapi');
   const server = new Hapi.Server();
@@ -75,18 +75,6 @@ module.exports = function (log, googleAuthHandler, redisClient) {
               }]
             }]
           }
-        }
-      }, {
-        register: require('hapi-auth-google'),
-        options: {
-          REDIRECT_URL: '/auth/google',
-          handler: googleAuthHandler,
-          access_type: 'online',
-          approval_prompt: 'auto',
-          scope: 'https://www.googleapis.com/auth/plus.profile.emails.read',
-          BASE_URL: `http://${process.env.HOST}:${process.env.PORT}`,
-          GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-          GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET
         }
       }
     ])

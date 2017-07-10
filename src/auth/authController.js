@@ -2,12 +2,15 @@
 
 const co = require('co')
 const JWT = require('jsonwebtoken')
+const Boom = require('boom')
+const _ = require('lodash')
 
-module.exports = function(User, redisClient) {
+module.exports = function(User, redisClient, GoogleAuthClient) {
   return {
     login: co.wrap(login),
     logout: co.wrap(logout),
     register: co.wrap(register),
+    authGoogle: co.wrap(authGoogle),
   }
 
   function* login(request, reply) {
@@ -32,5 +35,51 @@ module.exports = function(User, redisClient) {
 
   function* register(request, reply) {
     reply('user registered!')
+  }
+
+  function* authGoogle(request, reply) {
+    GoogleAuthClient.verifyIdToken(request.payload.idToken, process.env.GOOGLE_CLIENT_ID, function(e, login) {
+      const payload = login.getPayload()
+
+      if (!validateToken(payload.aud, payload.iss)) {
+        return reply(Boom.badRequest('token not from authorized resource!'))
+      }
+      
+      const authUser = {
+        firstName: payload.given_name,
+        lastName: payload.family_name,
+        email: payload.email,
+        imageUrl: payload.picture,
+        locale: payload.locale,
+        googleId: payload.sub,
+      }
+
+      let user
+      co.wrap(function* () {
+        user = yield User.findOne({ googleId: authUser.googleId })
+        if (!user) {
+          user = yield User.findOne({ email: authUser.email })
+          if (!user) {
+            user = new User(authUser)
+            user = user.save()
+          } else {
+            _.merge(user, authUser)
+            user = user.save()
+          }
+        }
+
+        const jwt = JWT.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET);
+
+        yield redisClient.setAsync(user.id, JSON.stringify({
+          googleId: authUser.googleId,
+          email: authUser.email
+        }))
+        return reply("You Logged in Using Goolge!").state('token', jwt);
+      }).call()
+    })
+  }
+
+  function validateToken(aud, iss) {
+    return aud === process.env.GOOGLE_CLIENT_ID && (iss === 'accounts.google.com' || iss === 'https://accounts.google.com')
   }
 }
