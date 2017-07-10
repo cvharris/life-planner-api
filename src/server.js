@@ -11,32 +11,21 @@ const redis = require('redis')
 // Log ops info very rarely when running locally. Time is in milliseconds.
 const monitoringInterval = process.env.ENV === 'prod' ? 60 * 1000 : 60 * 60 * 1000
 
-module.exports = function (log, redisClient) {
+module.exports = function (log, redisClient, User) {
 
   const Hapi = require('hapi');
   const server = new Hapi.Server();
 
   const validate = function* (decoded, request, callback) {
-    // do your checks to see if the session is valid
-    redisClient.get(decoded.id, function (err, reply) {
-      if(err) {
-        return Boom.internal(err)
-      }
-      var session;
-      if(reply) {
-        session = JSON.parse(reply);
-      }
-      else { // unable to find session in redis ... reply is null
-        return callback(err, false);
-      }
+    let userInfo = yield redisClient.getAsync(decoded.id)
 
-      if (session.valid === true) {
-        return callback(err, true);
-      }
-      else {
-        return callback(err, false);
-      }
-    });
+    if (userInfo) {
+      userInfo = JSON.parse(userInfo)
+      callback(null, true)
+    } else {
+      callback(null, false)
+    }
+
   };
 
   server.connection({
@@ -49,6 +38,7 @@ module.exports = function (log, redisClient) {
     routes: {
       cors: {
         headers: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type', 'If-None-Match', 'enctype'],
+        exposedHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type'],
         credentials: true
       }
     }

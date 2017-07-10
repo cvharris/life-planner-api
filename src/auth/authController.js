@@ -71,10 +71,12 @@ module.exports = function(User, redisClient, GoogleAuthClient) {
         const jwt = JWT.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET);
 
         yield redisClient.setAsync(user.id, JSON.stringify({
-          googleId: authUser.googleId,
+          id: authUser.googleId,
           email: authUser.email
         }))
-        return reply("You Logged in Using Goolge!").state('token', jwt);
+        return reply(user)
+          .header('Authorization', jwt)
+          .state('token', jwt);
       }).call()
     })
   }
