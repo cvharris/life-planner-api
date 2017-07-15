@@ -11,22 +11,10 @@ const redis = require('redis')
 // Log ops info very rarely when running locally. Time is in milliseconds.
 const monitoringInterval = process.env.ENV === 'prod' ? 60 * 1000 : 60 * 60 * 1000
 
-module.exports = function (log, redisClient, User) {
+module.exports = function (log, validateToken, redisClient) {
 
   const Hapi = require('hapi');
   const server = new Hapi.Server();
-
-  const validate = function* (decoded, request, callback) {
-    let userInfo = yield redisClient.getAsync(decoded.id)
-
-    if (userInfo) {
-      userInfo = JSON.parse(userInfo)
-      callback(null, true)
-    } else {
-      callback(null, false)
-    }
-
-  };
 
   server.connection({
     port: process.env.PORT,
@@ -71,7 +59,7 @@ module.exports = function (log, redisClient, User) {
 
     server.auth.strategy('jwt', 'jwt', true, {
       key: process.env.JWT_SECRET,  
-      validateFunc: co.wrap(validate),
+      validateFunc: co.wrap(validateToken),
       verifyOptions: {
         ignoreExpiration: true
       }

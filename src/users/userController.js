@@ -9,7 +9,8 @@ module.exports = function (User, log) {
 		list: co.wrap(list),
     update: co.wrap(update),
     deleteUser: co.wrap(deleteUser),
-    create: co.wrap(create)
+    create: co.wrap(create),
+    getOneByAuthToken: co.wrap(getOneByAuthToken),
   }
 
   function* list(request, reply) {
@@ -36,5 +37,11 @@ module.exports = function (User, log) {
 
   function* deleteUser(request, reply) {
     reply(`application "${request.params.userId}" deleted!`)
+  }
+
+  function* getOneByAuthToken(request, reply) {
+    const user = yield User.findById(request.auth.credentials.id)
+
+    reply(user)
   }
 }

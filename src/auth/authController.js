@@ -30,7 +30,9 @@ module.exports = function(User, redisClient, GoogleAuthClient) {
   }
 
   function* logout(request, reply) {
-    reply('logged out!')
+    const success = yield redisClient.delAsync(request.auth.credentials.id)
+
+    reply('Logged out')
   }
 
   function* register(request, reply) {

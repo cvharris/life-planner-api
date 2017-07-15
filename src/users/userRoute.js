@@ -8,7 +8,7 @@ module.exports = function (server, userController) {
     method: 'GET',
     path: `/${root}`,
     config: {
-      handler: ctrl.list
+      handler: ctrl.getOneByAuthToken
     }
   })
   server.route({

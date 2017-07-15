@@ -13,7 +13,7 @@ module.exports = function(server, authController) {
   })
 
   server.route({
-    method: 'POST',
+    method: 'GET',
     path: '/logout',
     handler: ctrl.logout
   })
