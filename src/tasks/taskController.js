@@ -12,11 +12,11 @@ module.exports = function (Task, log) {
     patch: co.wrap(patchTask),
     deactivateTask: co.wrap(deactivateTask),
     deleteTask: co.wrap(deleteTask),
-    create: co.wrap(createTask)
+    create: co.wrap(createTask),
   }
 
   function* listTasks(request, reply) {
-    const result = yield Task.find({ isActive: true })
+    const result = yield Task.find({ isActive: true, owner: new mongoose.Types.ObjectId(request.auth.credentials.id) })
 
     reply(result)
 	}
