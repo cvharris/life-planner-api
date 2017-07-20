@@ -10,6 +10,11 @@ module.exports = function (server, taskController) {
     handler: ctrl.list
   })
   server.route({
+    method: 'GET',
+    path: `/${root}/{taskId}`,
+    handler: ctrl.getTask
+  })
+  server.route({
     method: 'PATCH',
     path: `/${root}/{taskId}`,
     handler: ctrl.patch

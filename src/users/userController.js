@@ -32,7 +32,9 @@ module.exports = function (User, log) {
 	}
 
   function* update(request, reply) {
-    reply('updating user')
+    const user = yield User.findByIdAndUpdate(request.params.userId, request.payload, { new: true })
+
+    reply(user)
   }
 
   function* deleteUser(request, reply) {
@@ -41,6 +43,7 @@ module.exports = function (User, log) {
 
   function* getOneByAuthToken(request, reply) {
     const user = yield User.findById(request.auth.credentials.id)
+      .populate({ path: 'lifeTask', populate: { path: 'children' }})
 
     reply(user)
   }

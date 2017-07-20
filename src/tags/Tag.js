@@ -7,28 +7,30 @@ const ObjectId = Schema.Types.ObjectId
 module.exports = function () {
 
   const schema = new Schema({
-    firstName: String,
-    lastName: String,
-    email: { type: String, required: true },
-    lifeTask: { type: ObjectId, required: true, ref: 'Task' },
-    imageUrl: String,
-    locale: String,
-    googleId: String
+    name: {
+      type: String,
+      required: true,
+    },
+    owner: {
+      type: ObjectId,
+      ref: 'User',
+      required: true
+    },
   }, {
-    collection: 'Users',
+    collection: 'Tag',
     timestamps: true
   })
 
   function transform(doc, ret) {
-    delete ret.__v
     delete ret._id
+    delete ret.__v
     return ret
   }
 
   schema.set('toJSON', { virtuals: true, transform: transform })
   schema.set('toObject', { virtuals: true, transform: transform })
 
-  mongoose.model('User', schema)
+  mongoose.model('Tag', schema)
 
-  return mongoose.model('User')
+  return mongoose.model('Tag')
 }

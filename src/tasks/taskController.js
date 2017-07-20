@@ -13,10 +13,21 @@ module.exports = function (Task, log) {
     deactivateTask: co.wrap(deactivateTask),
     deleteTask: co.wrap(deleteTask),
     create: co.wrap(createTask),
+    getTask: co.wrap(getTask),
+  }
+
+  function* getTask(request, reply) {
+    const task = yield Task.findById(request.params.taskId)
+      .populate('children')
+
+    reply(task)
   }
 
   function* listTasks(request, reply) {
-    const result = yield Task.find({ isActive: true, owner: new mongoose.Types.ObjectId(request.auth.credentials.id) })
+    const result = yield Task.find({
+      isActive: true, 
+      owner: new mongoose.Types.ObjectId(request.auth.credentials.id)
+    })
 
     reply(result)
 	}
