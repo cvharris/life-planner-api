@@ -20,7 +20,7 @@ module.exports = function (server, taskController) {
     handler: ctrl.patch
   })
   server.route({
-    method: 'DELETE',
+    method: 'PUT',
     path: `/${root}/{taskId}`,
     handler: ctrl.deactivateTask
   })

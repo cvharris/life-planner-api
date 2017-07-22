@@ -63,7 +63,12 @@ module.exports = function (Task, log) {
   }
 
   function * deactivateTask (request, reply) {
-    const task = yield Task.findByIdAndUpdate(request.params.taskId, { isActive: false }, { new: true })
+    const taskId = request.params.taskId
+    const task = yield Task.findByIdAndUpdate(taskId, { isActive: false }, { new: true })
+
+    let parent = yield Task.findById(request.payload.parentId)
+    parent.children = parent.children.filter(child => !child.equals(new mongoose.Types.ObjectId(taskId)))
+    parent = yield parent.save()
 
     reply(task)
   }
