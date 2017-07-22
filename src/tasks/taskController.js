@@ -32,11 +32,14 @@ module.exports = function (Task, log) {
   }
 
   function * createTask (request, reply) {
-    const task = new Task(request.payload)
+    const task = new Task(request.payload.newTask)
 
     let result
     try {
       result = yield task.save()
+      const parent = yield Task.findById(request.payload.parent.id)
+      parent.children.push(result)
+      yield parent.save()
     } catch (e) {
       return reply(Boom.badRequest(e))
     }

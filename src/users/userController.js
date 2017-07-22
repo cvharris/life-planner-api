@@ -1,7 +1,6 @@
 'use strict'
 
 const co = require('co')
-const _ = require('lodash')
 
 module.exports = function (User, log) {
   return {
