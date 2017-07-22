@@ -5,14 +5,15 @@ const mongoose = require('mongoose')
 const _ = require('lodash')
 const Boom = require('boom')
 
-module.exports = function (Task, log) {
+module.exports = function (log, Task, User) {
   return {
     list: co.wrap(listTasks),
     patch: co.wrap(patchTask),
     deactivateTask: co.wrap(deactivateTask),
     deleteTask: co.wrap(deleteTask),
     create: co.wrap(createTask),
-    getTask: co.wrap(getTask)
+    getTask: co.wrap(getTask),
+    getSidebarTasks: co.wrap(getSidebarTasks)
   }
 
   function * getTask (request, reply) {
@@ -28,11 +29,25 @@ module.exports = function (Task, log) {
     reply(task)
   }
 
-  function * listTasks (request, reply) {
+  function * getSidebarTasks (request, reply) {
+    const user = yield User.findById(request.auth.credentials.id)
     const result = yield Task.find({
       isActive: true,
-      owner: new mongoose.Types.ObjectId(request.auth.credentials.id)
+      _id: { $ne: user.lifeTask },
+      children: { $not: { $size: 0 } }
     })
+
+    reply(result)
+  }
+
+  function * listTasks (request, reply) {
+    const criteria = {
+      isActive: true,
+      owner: new mongoose.Types.ObjectId(request.auth.credentials.id)
+    }
+    _.merge(criteria, request.query)
+
+    const result = yield Task.find(criteria)
 
     reply(result)
   }
