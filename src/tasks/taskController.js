@@ -16,8 +16,14 @@ module.exports = function (Task, log) {
   }
 
   function * getTask (request, reply) {
-    const task = yield Task.findById(request.params.taskId)
+    let task
+
+    try {
+      task = yield Task.findById(request.params.taskId)
       .populate('children')
+    } catch (e) {
+      return reply(Boom.notFound())
+    }
 
     reply(task)
   }
