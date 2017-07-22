@@ -31,11 +31,14 @@ module.exports = function (log, Task, User) {
 
   function * getSidebarTasks (request, reply) {
     const user = yield User.findById(request.auth.credentials.id)
-    const result = yield Task.find({
+    let result = yield Task.find({
       isActive: true,
+      isCompleted: false,
       _id: { $ne: user.lifeTask },
       children: { $not: { $size: 0 } }
-    })
+    }).populate('children')
+
+    result = result.filter(task => task.children.some(child => !child.isCompleted) || !task.isCompletedByChildren)
 
     reply(result)
   }
