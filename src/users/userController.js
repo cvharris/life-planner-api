@@ -8,7 +8,8 @@ module.exports = function (User, log) {
     update: co.wrap(update),
     deleteUser: co.wrap(deleteUser),
     create: co.wrap(create),
-    getOneByAuthToken: co.wrap(getOneByAuthToken)
+    getOneByAuthToken: co.wrap(getOneByAuthToken),
+    getOneById: co.wrap(getOneById)
   }
 
   function * list (request, reply) {
@@ -41,7 +42,14 @@ module.exports = function (User, log) {
 
   function * getOneByAuthToken (request, reply) {
     const user = yield User.findById(request.auth.credentials.id)
-      .populate('lifeTask')
+      .populate('lifeTask sidebarTask')
+
+    reply(user)
+  }
+
+  function * getOneById (request, reply) {
+    const user = yield User.findById(request.params.userId)
+      .populate('lifeTask sidebarTask')
 
     reply(user)
   }

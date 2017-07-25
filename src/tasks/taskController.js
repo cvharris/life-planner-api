@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const _ = require('lodash')
 const Boom = require('boom')
 
-module.exports = function (log, Task, User) {
+module.exports = function (log, Task, User, TaskHelper) {
   return {
     list: co.wrap(listTasks),
     patch: co.wrap(patchTask),
@@ -13,6 +13,7 @@ module.exports = function (log, Task, User) {
     deleteTask: co.wrap(deleteTask),
     create: co.wrap(createTask),
     getTask: co.wrap(getTask),
+    createChildTask: co.wrap(createChildTask),
     getSidebarTasks: co.wrap(getSidebarTasks)
   }
 
@@ -27,6 +28,22 @@ module.exports = function (log, Task, User) {
     }
 
     reply(task)
+  }
+
+  function * createChildTask (request, reply) {
+    const task = new Task(request.payload)
+
+    let result
+    try {
+      result = yield task.save()
+      const parent = yield Task.findById(request.params.taskId)
+      parent.children.push(result)
+      yield parent.save()
+    } catch (e) {
+      return reply(Boom.badRequest(e))
+    }
+
+    reply(result)
   }
 
   function * getSidebarTasks (request, reply) {
@@ -56,14 +73,11 @@ module.exports = function (log, Task, User) {
   }
 
   function * createTask (request, reply) {
-    const task = new Task(request.payload.newTask)
+    const task = new Task(request.payload)
 
     let result
     try {
       result = yield task.save()
-      const parent = yield Task.findById(request.payload.parent.id)
-      parent.children.push(result)
-      yield parent.save()
     } catch (e) {
       return reply(Boom.badRequest(e))
     }

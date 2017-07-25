@@ -30,8 +30,8 @@ module.exports = function (server, taskController) {
     handler: ctrl.create
   })
   server.route({
-    method: 'GET',
-    path: `/${root}/sidebar`,
-    handler: ctrl.getSidebarTasks
+    method: 'POST',
+    path: `/${root}/{taskId}/child`,
+    handler: ctrl.createChildTask
   })
 }

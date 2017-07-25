@@ -1,6 +1,4 @@
-"use strict"
-
-const Joi = require('joi')
+'use strict'
 
 module.exports = function (server, userController) {
   const ctrl = userController
@@ -10,6 +8,11 @@ module.exports = function (server, userController) {
     method: 'GET',
     path: `/${root}`,
     handler: ctrl.getOneByAuthToken
+  })
+  server.route({
+    method: 'GET',
+    path: `/${root}/{userId}`,
+    handler: ctrl.getOneById
   })
   server.route({
     method: 'PUT',

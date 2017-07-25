@@ -5,15 +5,15 @@ const JWT = require('jsonwebtoken')
 const Boom = require('boom')
 const _ = require('lodash')
 
-module.exports = function(User, redisClient, GoogleAuthClient) {
+module.exports = function (User, redisClient, GoogleAuthClient) {
   return {
     login: co.wrap(login),
     logout: co.wrap(logout),
     register: co.wrap(register),
-    authGoogle: co.wrap(authGoogle),
+    authGoogle: co.wrap(authGoogle)
   }
 
-  function* login(request, reply) {
+  function * login (request, reply) {
     const session = {
       valid: true, // this will be set to false when the person logs out
       id: aguid(), // a random session id
@@ -26,38 +26,38 @@ module.exports = function(User, redisClient, GoogleAuthClient) {
     console.log(token)
 
     reply({text: 'Check Auth Header for your Token'})
-    .header("Authorization", token);
+    .header('Authorization', token)
   }
 
-  function* logout(request, reply) {
+  function * logout (request, reply) {
     const success = yield redisClient.delAsync(request.auth.credentials.id)
 
     reply('Logged out')
   }
 
-  function* register(request, reply) {
+  function * register (request, reply) {
     reply('user registered!')
   }
 
-  function* authGoogle(request, reply) {
-    GoogleAuthClient.verifyIdToken(request.payload.idToken, process.env.GOOGLE_CLIENT_ID, function(e, login) {
+  function * authGoogle (request, reply) {
+    GoogleAuthClient.verifyIdToken(request.payload.idToken, process.env.GOOGLE_CLIENT_ID, function (e, login) {
       const payload = login.getPayload()
 
       if (!validateToken(payload.aud, payload.iss)) {
         return reply(Boom.badRequest('token not from authorized resource!'))
       }
-      
+
       const authUser = {
         firstName: payload.given_name,
         lastName: payload.family_name,
         email: payload.email,
         imageUrl: payload.picture,
         locale: payload.locale,
-        googleId: payload.sub,
+        googleId: payload.sub
       }
 
       let user
-      co.wrap(function* () {
+      co.wrap(function * () {
         user = yield User.findOne({ googleId: authUser.googleId })
         if (!user) {
           user = yield User.findOne({ email: authUser.email })
@@ -70,20 +70,23 @@ module.exports = function(User, redisClient, GoogleAuthClient) {
           }
         }
 
-        const jwt = JWT.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET);
+        const jwt = JWT.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET)
 
         yield redisClient.setAsync(user.id, JSON.stringify({
-          id: authUser.googleId,
-          email: authUser.email
+          id: user.id,
+          googleId: authUser.googleId,
+          email: authUser.email,
+          lifeTask: user.lifeTask,
+          sidebarTask: user.sidebarTask
         }))
         return reply(user)
           .header('Authorization', jwt)
-          .state('token', jwt);
+          .state('token', jwt)
       }).call()
     })
   }
 
-  function validateToken(aud, iss) {
+  function validateToken (aud, iss) {
     return aud === process.env.GOOGLE_CLIENT_ID && (iss === 'accounts.google.com' || iss === 'https://accounts.google.com')
   }
 }
