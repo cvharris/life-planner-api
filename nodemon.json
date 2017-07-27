@@ -1,0 +1,8 @@
+{
+  "ext": "ts",
+  "verbose": true,
+  "watch": [
+    "src/**/*.ts"
+  ],
+  "exec": "ts-node --inspect src/index.ts"
+}
