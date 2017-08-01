@@ -1,6 +1,6 @@
 {
   "ext": "ts",
-  "verbose": true,
+  "verbose": false,
   "watch": [
     "src/**/*.ts"
   ],

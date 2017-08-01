@@ -2,6 +2,7 @@ import { TaskRoutes } from './tasks/taskRoute'
 import { AuthRoutes } from './auth/authRoutes'
 import { MongoConnection } from './conf/connectMongoose'
 import { UserRoutes } from './users/userRoute'
+import { passport } from './auth/auth'
 import * as Koa from 'koa'
 import * as Router from 'koa-router'
 import { errorHandler } from './conf/errorHandler'
@@ -14,17 +15,23 @@ import * as bodyParser from 'koa-bodyparser'
 
 class Server {
 
-  public koa: Koa
+  koa: Koa
 
   constructor() {
     this.koa = new Koa()
     this.middleware()
+    this.auth()
     this.routes()
   }
 
   private middleware() {
     this.koa.use(errorHandler)
       .use(bodyParser())
+      .use(koaLogger())
+  }
+
+  private auth() {
+    this.koa.use(passport.initialize())
   }
 
   private routes() {
@@ -40,22 +47,6 @@ class Server {
     this.koa.use(router.allowedMethods())
   }
 
-  // server.connection({
-  //   port: process.env.PORT,
-  //   host: process.env.HOST,
-  //   router: {
-  //     isCaseSensitive: false,
-  //     stripTrailingSlash: true
-  //   },
-  //   routes: {
-  //     cors: {
-  //       headers: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type', 'If-None-Match', 'enctype'],
-  //       exposedHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type'],
-  //       credentials: true
-  //     }
-  //   }
-  // })
-
     // server.auth.strategy('jwt', 'jwt', true, {
     //   key: process.env.JWT_SECRET,
     //   validateFunc: co.wrap(validateToken),
@@ -63,11 +54,6 @@ class Server {
     //     ignoreExpiration: true
     //   }
     // });
-
-    // yield server.start()
-    // log.info('Server started:', {
-    //   uri: server.info.uri
-    // })
 }
 
 export const App = new Server().koa

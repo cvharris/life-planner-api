@@ -1,5 +1,6 @@
 import * as Router from 'koa-router'
 import { AuthController, authCtrl } from './authController'
+import { passport } from './auth'
 
 export class AuthRouter {
 
@@ -9,9 +10,17 @@ export class AuthRouter {
   constructor() {
     this.ctrl = authCtrl
     this.router = new Router()
-    this.router.get(`/login`, this.ctrl.login)
+
+    // Main authorization method
+    this.router.get('/auth/token', passport.authenticate('jwt-token'))
     this.router.get('/logout', this.ctrl.logout)
-    this.router.post('/auth/google', this.ctrl.authGoogle)
+
+
+    this.router.post('/register', passport.authenticate('local-signup', { successRedirect: '/auth/token', failureRedirect: '/401' }))
+    this.router.post('/login', passport.authenticate('local-signin', { successRedirect: '/auth/token', failureRedirect: '/401' }))
+
+    this.router.post('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
+    this.router.post('/auth/google/callback', passport.authenticate('google', { successRedirect: '/auth/token', failureRedirect: '/401' }))
   }
 }
 
