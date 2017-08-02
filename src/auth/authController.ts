@@ -25,9 +25,12 @@ export class AuthController {
   }
 
   async logout (ctx: Context, next) {
-    // const success = await redisClient.delAsync(ctx.request.auth.credentials.id)
+    const success = await redisClient.delAsync(ctx.state.user.id)
+    if (success) {
+      ctx.logout()
+      ctx.body = 'Logged out'
+    }
 
-    ctx.body = 'Logged out'
   }
 
   async register (ctx: Context, next) {

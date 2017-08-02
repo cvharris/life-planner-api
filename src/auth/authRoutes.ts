@@ -12,8 +12,8 @@ export class AuthRouter {
     this.router = new Router()
 
     // Main authorization method
-    this.router.get('/auth/token', passport.authenticate('jwt-token'))
-    this.router.get('/logout', this.ctrl.logout)
+    this.router.get('/auth/token', passport.authenticate('jwt'))
+    this.router.get('/logout', passport.authenticate('jwt'), this.ctrl.logout)
 
 
     this.router.post('/register', passport.authenticate('local-signup', { successRedirect: '/auth/token', failureRedirect: '/401' }))
