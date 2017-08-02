@@ -106,8 +106,9 @@ export class PassportBuilder {
     this.passport.use(new JwtStrategy({
       jwtFromRequest: ExtractJwt.fromAuthHeader(),
       secretOrKey: process.env.JWT_SECRET,
-      ignoreExpiration: true
-    }, async (payload, done) => {
+      ignoreExpiration: true,
+      passReqToCallback: true
+    }, async (req, payload, done) => {
       const user = await redisClient.getAsync(payload.id)
 
       if (user) {

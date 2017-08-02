@@ -8,6 +8,7 @@ import * as Router from 'koa-router'
 import { errorHandler } from './conf/errorHandler'
 import * as koaLogger from 'koa-logger'
 import * as bodyParser from 'koa-bodyparser'
+import cors = require('kcors')
 // require('dotenv').config()
 // const JWT = require('jsonwebtoken')
 // const url = require('url')
@@ -28,6 +29,13 @@ class Server {
     this.koa.use(errorHandler)
       .use(bodyParser())
       .use(koaLogger())
+      .use(cors({
+        origin: '*',
+        allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH'],
+        allowHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type', 'If-None-Match', 'enctype'],
+        exposeHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type'],
+        credentials: true
+      }))
   }
 
   private auth() {

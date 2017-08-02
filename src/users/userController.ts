@@ -32,7 +32,7 @@ export class UserController {
   }
 
   async getOneByAuthToken(ctx, next) {
-    const user = await User.findById(ctx.request.auth.credentials.id)
+    const user = await User.findById(ctx.state.user.id)
       .populate('lifeTask sidebarTask')
 
     ctx.body = user
