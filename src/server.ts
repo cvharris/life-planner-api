@@ -32,7 +32,7 @@ class Server {
       .use(cors({
         origin: '*',
         allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH'],
-        allowHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type', 'If-None-Match', 'enctype'],
+        allowHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type', 'If-None-Match', 'enctype', 'X-Requested-With'],
         exposeHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type'],
         credentials: true
       }))

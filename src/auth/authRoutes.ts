@@ -1,6 +1,6 @@
 import * as Router from 'koa-router'
 import { AuthController, authCtrl } from './authController'
-import { passport } from './auth'
+import * as passport from 'koa-passport'
 
 export class AuthRouter {
 
@@ -12,15 +12,14 @@ export class AuthRouter {
     this.router = new Router()
 
     // Main authorization method
-    this.router.get('/auth/token', passport.authenticate('jwt'))
+    this.router.get('/auth/token', passport.authenticate('jwt'), this.ctrl.login)
     this.router.get('/logout', passport.authenticate('jwt'), this.ctrl.logout)
 
 
-    this.router.post('/register', passport.authenticate('local-signup', { successRedirect: '/auth/token', failureRedirect: '/401' }))
-    this.router.post('/login', passport.authenticate('local-signin', { successRedirect: '/auth/token', failureRedirect: '/401' }))
+    this.router.post('/register', passport.authenticate('local-signup', { successRedirect: '/api/auth/token', failureRedirect: '/401' }))
+    this.router.post('/login', passport.authenticate('local-signin', { successRedirect: '/api/auth/token', failureRedirect: '/401' }))
 
-    this.router.post('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-    this.router.post('/auth/google/callback', passport.authenticate('google', { successRedirect: '/auth/token', failureRedirect: '/401' }))
+    this.router.get('/auth/google', passport.authenticate('google', { failWithError: true, accessType: 'offline', prompt: 'consent', approvalPrompt: 'force' }), this.ctrl.login)
   }
 }
 

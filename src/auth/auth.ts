@@ -2,9 +2,11 @@ import { IUser, User } from '../users/User'
 import { redisClient } from '../conf/redisConnection'
 import * as JWT from 'jsonwebtoken'
 import koaPassport = require('koa-passport')
-import GoogleStrategy = require('passport-google-oauth')
-import LocalStrategy = require('passport-local')
 import * as JWTPassport from 'passport-jwt'
+import * as _ from 'lodash'
+const GoogleTokenStrategy = require('passport-google-id-token')
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
+const LocalStrategy = require('passport-local').Strategy
 const JwtStrategy = JWTPassport.Strategy
 const ExtractJwt = JWTPassport.ExtractJwt
 require('dotenv').config()
@@ -18,7 +20,8 @@ export class PassportBuilder {
     this.init()
     this.setupLocalRegistry()
     this.setupLocalLogin()
-    this.setupToken()
+    this.setupJWTLogin()
+    this.setupGoogle()
   }
 
   init() {
@@ -29,13 +32,6 @@ export class PassportBuilder {
       const user = await redisClient.getAsync(id)
       done(null, user)
     })
-  }
-
-  generateToken(user: IUser) {
-    const session = {
-      id: user._id
-    }
-    return JWT.sign(session, process.env.JWT_SECRET)
   }
 
   setupLocalRegistry() {
@@ -70,12 +66,7 @@ export class PassportBuilder {
 
       if (user) {
         if (user.validPassword) {
-          let token = await redisClient.getAsync(user.id)
-          if (!token) {
-            token = this.generateToken(user)
-            await redisClient.setAsync(user.id, JSON.stringify(token))
-          }
-          return done(null, token)
+          return done(null, user)
         }
         // user found but wrong password
         return done(null, false)
@@ -86,23 +77,52 @@ export class PassportBuilder {
     }))
   }
 
+  setupGoogleBetter() {
+    this.passport.use('google-new', new GoogleTokenStrategy({
+      clientId: process.env.GOOGLE_CLIENT_ID
+    }, async() => {
+      console.log('derp')
+    } ))
+  }
+
   setupGoogle() {
     this.passport.use('google', new GoogleStrategy({
-      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `http://${process.env.HOST}:${process.env.PORT}/auth/google/callback`,
-      passReqToCallback: true
-    }, async (req, token: string, refreshToken: string, profile, done) => {
-      // TODO: check req here for user
-      const user = await User.findOne({ googleId: profile.id })
+      callbackURL: process.env.CLIENT_URL,
+    }, async (token, refreshToken, profile, done) => {
+      console.log(token, refreshToken)
+      // TODO: save access token and refreshToken
+      let user = await User.findOne({ googleId: profile.id })
 
       if (user) {
+        return done(null, user)
+      } else {
+        const accountEmail = profile.emails.find(email => email.type === 'account')[0].value
+        user = await User.findOne({ email: accountEmail })
 
+        const authUser = {
+          firstName: profile.name.given_name,
+          lastName: profile.name.family_name,
+          email: accountEmail,
+          imageUrl: profile.photos[0].value,
+          googleId: profile.id
+        }
+
+        if (!user) {
+          user = new User(authUser)
+          user = await user.save()
+        } else {
+          _.merge(user, authUser)
+          user = await user.save()
+        }
+
+        return done(null, user)
       }
     }))
   }
 
-  setupToken() {
+  setupJWTLogin() {
     this.passport.use(new JwtStrategy({
       jwtFromRequest: ExtractJwt.fromAuthHeader(),
       secretOrKey: process.env.JWT_SECRET,
