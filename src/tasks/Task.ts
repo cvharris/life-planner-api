@@ -5,6 +5,7 @@ import ObjectId = Schema.Types.ObjectId
 export interface ITask extends Document {
   description: string
   owner: IUser
+  id: string
   assignedTo: IUser[]
   state: ObjectId
   startDate: Date
@@ -50,7 +51,7 @@ export const TaskSchema: Schema = new Schema({
 TaskSchema.set('toJSON', { virtuals: true, transform: this.transform })
 TaskSchema.set('toObject', { virtuals: true, transform: this.transform })
 
-function transform (doc: Document, ret) {
+function transform (doc: Document, ret: Document) {
   delete ret._id
   delete ret.__v
   return ret

@@ -21,7 +21,7 @@ export class TaskController {
   }
 
   async createChildTask (ctx: Context, next) {
-    let task = new Task(ctx.body)
+    let task = new Task(ctx.request.body)
 
     try {
       task = await task.save()
@@ -36,7 +36,7 @@ export class TaskController {
   }
 
   async getSidebarTasks (ctx: Context, next) {
-    const user = await User.findById(ctx.body.credentials.id)
+    const user = await User.findById(ctx.state.user.id)
     let result = await Task.find({
       isActive: true,
       isCompleted: false,
@@ -52,7 +52,7 @@ export class TaskController {
   async listTasks (ctx: Context, next) {
     const criteria = {
       isActive: true,
-      owner: new Types.ObjectId(ctx.body.credentials.id)
+      owner: new Types.ObjectId(ctx.state.user.id)
     }
     _.merge(criteria, ctx.query)
 
@@ -76,7 +76,7 @@ export class TaskController {
 
   async patchTask (ctx: Context, next) {
     const task = await Task.findById(ctx.params.taskId)
-    _.extend(task, ctx.body)
+    _.extend(task, ctx.request.body)
 
     const result = await task.save()
 
@@ -87,8 +87,8 @@ export class TaskController {
     const taskId = ctx.params.taskId
     const task = await Task.findByIdAndUpdate(taskId, { isActive: false }, { new: true })
 
-    let parent = await Task.findById(ctx.body.parentId).populate('children')
-    parent.children = parent.children.filter(child => child._id !== new Types.ObjectId(taskId))
+    let parent = await Task.findById(ctx.request.body.parentId).populate('children')
+    parent.children = parent.children.filter(child => child.id !== taskId)
     parent = await parent.save()
 
     ctx.body = task

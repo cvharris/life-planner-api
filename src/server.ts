@@ -6,7 +6,8 @@ import { passport } from './auth/auth'
 import * as Koa from 'koa'
 import * as Router from 'koa-router'
 import { errorHandler } from './conf/errorHandler'
-import * as koaLogger from 'koa-logger'
+import * as  pino from 'koa-pino-logger'
+import * as logger from 'koa-logger'
 import * as bodyParser from 'koa-bodyparser'
 import cors = require('kcors')
 // require('dotenv').config()
@@ -28,7 +29,27 @@ class Server {
   private middleware() {
     this.koa.use(errorHandler)
       .use(bodyParser())
-      .use(koaLogger())
+      .use(logger())
+      // .use(pino({
+      //   prettyPrint: {
+      //     timeTransOnly: true,
+      //     levelFirst: true,
+      //     forceColor: true
+      //   },
+      //   serializers: {
+      //     req: (req) => {
+      //       return {
+      //         method: req.method,
+      //         url: req.url,
+      //       }
+      //     },
+      //     res: (res) => {
+      //       return {
+      //         code: res.statusCode,
+      //       }
+      //     }
+      //   }
+      // }))
       .use(cors({
         origin: '*',
         allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH'],

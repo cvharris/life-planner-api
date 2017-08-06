@@ -4,7 +4,6 @@ import * as JWT from 'jsonwebtoken'
 import koaPassport = require('koa-passport')
 import * as JWTPassport from 'passport-jwt'
 import * as _ from 'lodash'
-const GoogleTokenStrategy = require('passport-google-id-token')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 const LocalStrategy = require('passport-local').Strategy
 const JwtStrategy = JWTPassport.Strategy
@@ -75,14 +74,6 @@ export class PassportBuilder {
         return done(null, false)
       }
     }))
-  }
-
-  setupGoogleBetter() {
-    this.passport.use('google-new', new GoogleTokenStrategy({
-      clientId: process.env.GOOGLE_CLIENT_ID
-    }, async() => {
-      console.log('derp')
-    } ))
   }
 
   setupGoogle() {

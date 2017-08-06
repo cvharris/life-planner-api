@@ -14,6 +14,7 @@ export class TaskRouter {
     this.router.patch('/task/:taskId', passport.authenticate('jwt'), this.ctrl.patchTask)
     this.router.post('/task', passport.authenticate('jwt'), this.ctrl.createTask)
     this.router.post('/task/:taskId/child', passport.authenticate('jwt'), this.ctrl.createChildTask)
+    this.router.put('/task/:taskId', passport.authenticate('jwt'), this.ctrl.deactivateTask)
   }
 }
 

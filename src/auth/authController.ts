@@ -1,5 +1,4 @@
 import { redisClient } from '../conf/redisConnection'
-import { GoogleAuthClient } from '../conf/GoogleAuthClient'
 import { Context } from 'koa'
 import * as aguid from 'aguid'
 import { User } from '../users/User'
