@@ -4,7 +4,7 @@ import { User } from './User'
 export class UserController {
 
   async list(ctx: Context, next) {
-    const result = await User.find()
+    const result = await User.findOne()
 
     ctx.body = result
   }
@@ -33,7 +33,8 @@ export class UserController {
 
   async getOneByAuthToken(ctx, next) {
     const user = await User.findById(ctx.state.user.id)
-      .populate('lifeTask sidebarTask')
+      .populate({ path: 'lifeTask', populate: { path: 'children' }})
+      .populate({ path: 'sidebarTask', populate: { path: 'children' }})
 
     ctx.body = user
   }

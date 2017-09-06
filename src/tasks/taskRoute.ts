@@ -11,6 +11,7 @@ export class TaskRouter {
     this.router = new Router()
     this.router.get('/task', passport.authenticate('jwt'), this.ctrl.listTasks)
     this.router.get('/task/:taskId', passport.authenticate('jwt'), this.ctrl.getTask)
+    // this.router.get('/task/:taskId', this.ctrl.getTask)
     this.router.patch('/task/:taskId', passport.authenticate('jwt'), this.ctrl.patchTask)
     this.router.post('/task', passport.authenticate('jwt'), this.ctrl.createTask)
     this.router.post('/task/:taskId/child', passport.authenticate('jwt'), this.ctrl.createChildTask)

@@ -115,7 +115,7 @@ export class PassportBuilder {
 
   setupJWTLogin() {
     this.passport.use(new JwtStrategy({
-      jwtFromRequest: ExtractJwt.fromAuthHeader(),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_SECRET,
       ignoreExpiration: true,
       passReqToCallback: true
