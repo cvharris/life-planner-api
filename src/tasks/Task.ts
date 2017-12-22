@@ -31,7 +31,7 @@ export const TaskSchema: Schema = new Schema({
     required: true
   },
   assignedTo: [ ObjectId ],
-  state: { type: ObjectId },
+  // state: { type: ObjectId },
   dueDate: { type: Date },
   startDate: { type: Date },
   endDate: { type: Date },

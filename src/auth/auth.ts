@@ -1,5 +1,6 @@
 import { IUser, User } from '../users/User'
 import { redisClient } from '../conf/redisConnection'
+import { Task } from '../tasks/Task'
 import * as JWT from 'jsonwebtoken'
 import koaPassport = require('koa-passport')
 import * as JWTPassport from 'passport-jwt'
@@ -82,14 +83,13 @@ export class PassportBuilder {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.CLIENT_URL,
     }, async (token, refreshToken, profile, done) => {
-      console.log(token, refreshToken)
       // TODO: save access token and refreshToken
       let user = await User.findOne({ googleId: profile.id })
 
       if (user) {
         return done(null, user)
       } else {
-        const accountEmail = profile.emails.find(email => email.type === 'account')[0].value
+        const accountEmail = profile.emails.filter(email => email.type === 'account')[0].value
         user = await User.findOne({ email: accountEmail })
 
         const authUser = {
@@ -102,6 +102,22 @@ export class PassportBuilder {
 
         if (!user) {
           user = new User(authUser)
+          const lifeTask = new Task({
+            _id: user.lifeTask,
+            description: 'All Tasks',
+            owner: user._id,
+            canComplete: false
+          })
+          user.lifeTask = await lifeTask.save()
+
+          const sideTask = new Task({
+            _id: user.sidebarTask,
+            description: 'Sidebar',
+            owner: user._id,
+            canComplete: false
+          })
+          user.sidebarTask = await sideTask.save()
+
           user = await user.save()
         } else {
           _.merge(user, authUser)

@@ -12,7 +12,7 @@ export class TaskController {
 
     try {
       task = await Task.findById(ctx.params.taskId)
-      .populate('children')
+        .populate('children')
     } catch (e) {
       ctx.throw(404)
     }
@@ -62,11 +62,14 @@ export class TaskController {
   }
 
   async createTask (ctx: Context, next) {
-    const task = new Task(ctx.body)
+    const task = new Task(ctx.request.body)
 
     let result
     try {
       result = await task.save()
+      const parent = await Task.findById(ctx.state.user.lifeTask)
+      parent.children.push(task)
+      await parent.save()
     } catch (e) {
       ctx.throw(400, e)
     }

@@ -1,5 +1,6 @@
 import { Context } from 'koa'
 import { User } from './User'
+import { Task } from '../tasks/Task'
 
 export class UserController {
 
@@ -16,7 +17,23 @@ export class UserController {
       email: ctx.request.payload.email
     })
 
-    const result = user.save()
+    const lifeTask = new Task({
+      _id: user.lifeTask,
+      description: 'All Tasks',
+      owner: user._id,
+      canComplete: false
+    })
+    user.lifeTask = await lifeTask.save()
+
+    const sideTask = new Task({
+      _id: user.sidebarTask,
+      description: 'Sidebar',
+      owner: user._id,
+      canComplete: false
+    })
+    user.sidebarTask = await sideTask
+
+    const result = await user.save()
 
     ctx.body = result
   }

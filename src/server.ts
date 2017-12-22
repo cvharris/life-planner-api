@@ -10,24 +10,21 @@ import * as  pino from 'koa-pino-logger'
 import * as logger from 'koa-logger'
 import * as bodyParser from 'koa-bodyparser'
 import cors = require('kcors')
-// require('dotenv').config()
-// const JWT = require('jsonwebtoken')
-// const url = require('url')
-// const redis = require('redis')
 
 class Server {
 
   koa: Koa
 
   constructor() {
-    this.koa = new Koa()
-    this.middleware()
-    this.auth()
-    this.routes()
+    let koa = new Koa()
+    koa = this.middleware(koa)
+    koa = this.auth(koa)
+    koa = this.routes(koa)
+    this.koa = koa
   }
 
-  private middleware() {
-    this.koa.use(errorHandler)
+  private middleware(koa: Koa) {
+    koa.use(errorHandler)
       .use(bodyParser())
       .use(logger())
       // .use(pino({
@@ -57,13 +54,15 @@ class Server {
         exposeHeaders: ['Accept', 'Access-Control-Allow-Origin', 'Authorization', 'Content-Type'],
         credentials: true
       }))
+      return koa
   }
 
-  private auth() {
-    this.koa.use(passport.initialize())
+  private auth(koa: Koa) {
+    koa.use(passport.initialize())
+    return koa
   }
 
-  private routes() {
+  private routes(koa: Koa) {
     const router = new Router()
     const api = new Router()
 
@@ -72,17 +71,10 @@ class Server {
     api.use(TaskRoutes.routes())
 
     router.use('/api', api.routes())
-    this.koa.use(router.routes())
-    this.koa.use(router.allowedMethods())
+    koa.use(router.routes())
+    koa.use(router.allowedMethods())
+    return koa
   }
-
-    // server.auth.strategy('jwt', 'jwt', true, {
-    //   key: process.env.JWT_SECRET,
-    //   validateFunc: co.wrap(validateToken),
-    //   verifyOptions: {
-    //     ignoreExpiration: true
-    //   }
-    // });
 }
 
 export const App = new Server().koa

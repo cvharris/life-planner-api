@@ -1,4 +1,3 @@
-import { redisClient } from '../conf/redisConnection'
 import { Document, Schema, model, Model } from 'mongoose'
 import { ITask, Task } from '../tasks/Task'
 const bcrypt = require('bcryptjs')

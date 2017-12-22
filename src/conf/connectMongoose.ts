@@ -1,3 +1,4 @@
+import { ConnectionOptions } from 'mongoose'
 import mongoose = require('mongoose')
 
 export const MongoConnection = () => {
@@ -9,7 +10,9 @@ export const MongoConnection = () => {
   })
 
   const options = {
-    promiseLibrary: global.Promise
+    promiseLibrary: global.Promise,
+    useMongoClient: true,
   }
-  mongoose.connect(`mongodb://127.0.0.1:27017/${databaseName}`, options)
+
+  mongoose.connect(`mongodb://127.0.0.1:27017/${databaseName}`, options, err => console.error(err))
 }

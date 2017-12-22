@@ -18,6 +18,9 @@
       "port": 9229,
       "protocol": "inspector",
       "restart": true,
+      "skipFiles": [
+        "<node_internals>/**/*.js"
+      ],
       "outFiles": [
         "${workspaceRoot}/built/**/*.js"
       ]
